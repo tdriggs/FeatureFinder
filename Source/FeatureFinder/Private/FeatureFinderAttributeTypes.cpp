@@ -183,11 +183,29 @@ FString FFeatureAttributeValue_Property::ToString() const
 		const FStrProperty* StrProperty = CastFieldChecked<FStrProperty>(AttributeProperty);
 		PropertyValue = StrProperty->GetPropertyValue_InContainer(Asset.Get());
 	}
-	
-	// TODO: Support Object Property?
-	// TODO: Support Numeric Property?
-	// TODO: Support Name Property?
-	// TODO: Support Bool Property?
+	else if (AttributeProperty->IsA<FObjectProperty>())
+	{
+		const FObjectProperty* ObjectProperty = CastFieldChecked<FObjectProperty>(AttributeProperty);
+		const UObject* Object = ObjectProperty->GetPropertyValue_InContainer(Asset.Get());
+		PropertyValue = GetNameSafe(Object);
+	}
+	else if (AttributeProperty->IsA<FNumericProperty>())
+	{
+		const FNumericProperty* NumericProperty = CastFieldChecked<FNumericProperty>(AttributeProperty);
+		PropertyValue = NumericProperty->GetNumericPropertyValueToString_InContainer(Asset.Get());
+	}
+	else if (AttributeProperty->IsA<FNameProperty>())
+	{
+		const FNameProperty* NameProperty = CastFieldChecked<FNameProperty>(AttributeProperty);
+		const FName NameValue = NameProperty->GetPropertyValue_InContainer(Asset.Get());
+		PropertyValue = NameValue.ToString();
+	}
+	else if (AttributeProperty->IsA<FBoolProperty>())
+	{
+		const FBoolProperty* BoolProperty = CastFieldChecked<FBoolProperty>(AttributeProperty);
+		const bool Bool = BoolProperty->GetPropertyValue_InContainer(Asset.Get());
+		PropertyValue = Bool ? TEXT("True") : TEXT("False");
+	}
 
 	return PropertyValue;
 }
